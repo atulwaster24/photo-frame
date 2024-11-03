@@ -1,101 +1,469 @@
-import Image from "next/image";
+// "use client";
+// import React, { useState, useRef } from "react";
+// import Spinner5 from "./components/Spinner";
 
-export default function Home() {
+// const MAX_FILE_SIZE_MB = 10; // Maximum file size in MB
+
+// const ImageUploader = () => {
+//   const [image, setImage] = useState(null); // Uploaded image URL
+//   const [loading, setLoading] = useState(false);
+//   const [processedImage, setProcessedImage] = useState(null); // Processed image with frame
+//   const [fileSize, setFileSize] = useState(null); // File size of the uploaded image
+//   const [errorMessage, setErrorMessage] = useState(null); // Error message for large files
+//   const fileInputRef = useRef(null); // Ref for the file input
+
+//   // Handle Image Upload
+//   const handleImageUpload = (e) => {
+//     const file = e.target.files[0];
+//     if (file && file.type.startsWith("image")) {
+//       const fileSizeMB = file.size / (1024 * 1024); // Convert bytes to MB
+//       setFileSize(fileSizeMB.toFixed(2)); // Show file size up to 2 decimal places
+
+//       if (fileSizeMB > MAX_FILE_SIZE_MB) {
+//         // If file size exceeds the limit, show an error and reset the image
+//         setErrorMessage(`File size exceeds ${MAX_FILE_SIZE_MB} MB. Please upload a smaller image.`);
+//         setImage(null);
+//         setProcessedImage(null);
+//         return;
+//       }
+
+//       setErrorMessage(null); // Clear any existing error message
+//       const reader = new FileReader();
+//       reader.onload = (event) => {
+//         setImage(event.target.result); // Set uploaded image URL
+//         setProcessedImage(null); // Reset processed image if a new file is uploaded
+//       };
+//       reader.readAsDataURL(file);
+//     }
+//   };
+
+//   // Submit Image to the API for Processing
+//   const handleProcessImage = async () => {
+//     setLoading(true);
+//     try {
+//       const response = await fetch("/api/image", {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ image }),
+//       });
+//       const data = await response.json();
+//       setProcessedImage(data.image);
+//       setLoading(false); // Set processed image from server
+//     } catch (error) {
+//       console.error("Error processing image:", error);
+//       setLoading(false);
+//     }
+//   };
+
+//   // Download the Processed Image
+//   const handleDownload = () => {
+//     const link = document.createElement("a");
+//     link.href = processedImage;
+//     link.download = "framed-image.png";
+//     link.click();
+//   };
+
+//   // Clear the file input, uploaded image, and processed image
+//   const handleClearImage = () => {
+//     setImage(null);
+//     setProcessedImage(null);
+//     setFileSize(null);
+//     setErrorMessage(null);
+//     if (fileInputRef.current) {
+//       fileInputRef.current.value = ""; // Clear the file input field
+//     }
+//   };
+
+//   return (
+//     <div className="flex container border mt-24 justify-around mx-auto gap-2 p-4 text-center">
+//       <div className="basis-2/3 rounded-lg border shadow-2xl p-8">
+//         <h1 className="text-3xl font-bold p-4">We Support Geeta Jain</h1>
+
+//         {/* File Input */}
+//         <form className="w-[80%] rounded-lg" method="post">
+//           <input
+//             type="file"
+//             accept="image/*"
+//             onChange={handleImageUpload}
+//             ref={fileInputRef} // Attach ref to input
+//             className="block w-full border text-sm rounded-lg text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-300 file:text-black hover:file:bg-blue-800 hover:file:text-white"
+//           />
+
+//         </form>
+
+//         {/* Display File Size or Error Message */}
+//         {fileSize && !errorMessage && (
+//           <p className="text-gray-600 mt-2">Image size: {fileSize} MB</p>
+//         )}
+//         {errorMessage && (
+//           <p className="text-red-500 mt-2">{errorMessage}</p>
+//         )}
+
+//         <div className="flex justify-around">
+//           <div className="">
+//             <div className="mt-8 flex justify-center border-2 rounded-lg items-center min-h-[300px] overflow-hidden w-[300px]">
+//               {!image && !errorMessage && (
+//                 <h2 className="text-lg font-semibold text-gray-600">
+//                   Your Image
+//                 </h2>
+//               )}
+//               {image && (
+//                 <div className="flex flex-col">
+//                   <div className="">
+//                     <img
+//                       src={image}
+//                       alt="Uploaded Preview"
+//                       className="shadow-lg w-full rounded-lg min-h-[300px] object-cover h-[300px]"
+//                     />
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+
+//             {image && (
+//               <div className="">
+//                 <div>
+//                   <h1 className="w-full font-semibold text-left pl-2">Select Language</h1>
+//                   <select className="border rounded-md p-2">
+//                     <option selected disabled>Choose Band Text</option>
+//                     <option value="English">I SUPPORT GEETA BHARAT JAIN</option>
+//                     <option value="Hindi">मैं गीता भारत जैन के साथ हु </option>
+//                     <option value="Marathi">मी गीता भारत जैन सोबत आहे </option>
+//                     <option value="Gujrati">Gujrati</option>
+//                   </select>
+//                 </div>
+//                 <div className="flex justify-around">
+//                   <div>
+//                     {loading ? (
+//                       <Spinner5 />
+//                     ) : (
+//                       <button
+//                         onClick={handleProcessImage}
+//                         disabled={loading || processedImage !== null}
+//                         className={`mt-4 rounded-lg bg-[#FFAA33] py-2 px-4 font-semibold text-[#261D79]`}
+//                       >
+//                         {processedImage == null ? "Add Banner" : "Completed"}
+//                       </button>
+//                     )}
+//                   </div>
+//                   <div>
+//                     <button
+//                       onClick={handleClearImage}
+//                       className="mt-4 rounded-lg bg-red-500 py-2 px-4 hover:bg-red-500/80 font-semibold text-white"
+//                     >
+//                       Remove Image
+//                     </button>
+//                   </div>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Display Processed Image */}
+//           {processedImage && (
+//             <div>
+//               <div className="mt-8 flex justify-center items-center min-h-[300px] rounded-lg overflow-hidden w-[300px]">
+//                 <img
+//                   src={processedImage}
+//                   alt="Processed with Frame"
+//                   className=" border border-gray-300 rounded-full transition-all shadow-lg w-full min-h-[300px] object-cover h-[300px] shadow-lg"
+//                 />
+//               </div>
+//               <button
+//                 onClick={handleDownload}
+//                 className="mt-4 rounded-lg bg-green-400 py-2 px-4 hover:opacity-80 font-semibold text-black"
+//               >
+//                 Download
+//               </button>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//       <div
+//         className="basis-1/3 rounded-lg w-[90%]"
+//         style={{ backgroundImage: "var(--gradient)" }}
+//       >
+//         <h1 className="text-3xl font-bold pt-10 text-white">Steps</h1>
+//         <div className="p-4">
+//           <div className="px-10 py-4 shadow-xl bg-gray-200/50 rounded-lg">
+//             <ul className="text-black font-medium text-lg list-decimal text-left">
+//               <li>Click on the choose file button and select an image.</li>
+//               <li>Preview the Image and click on the Add Banner button.</li>
+//               <li>Wait for the process to complete.</li>
+//               <li>Download the processed image.</li>
+//             </ul>
+//           </div>
+//         </div>
+//         <div>
+//           <h1 className="pl-10 text-left text-lg font-bold text-white">
+//             Sample Output:
+//           </h1>
+//           <div className="flex justify-center">
+//             <div className="my-2 min-h-[200px] rounded-lg overflow-hidden w-[200px]">
+//               <img
+//                 src={"/sample.png"}
+//                 alt="Sample Output Image"
+//                 className=" border border-gray-300 rounded-full transition-all shadow-lg w-full min-h-[200px] object-cover h-[200px] shadow-lg"
+//               />
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ImageUploader;
+
+"use client";
+import React, { useState, useRef } from "react";
+import Spinner5 from "./components/Spinner";
+
+const MAX_FILE_SIZE_MB = 10; // Maximum file size in MB
+
+const ImageUploader = () => {
+  const [image, setImage] = useState(null); // Uploaded image URL
+  const [loading, setLoading] = useState(false);
+  const [processedImage, setProcessedImage] = useState(null); // Processed image with frame
+  const [fileSize, setFileSize] = useState(null); // File size of the uploaded image
+  const [errorMessage, setErrorMessage] = useState(null); // Error message for large files
+  const [selectedLanguage, setSelectedLanguage] = useState(""); // Track selected language
+  const fileInputRef = useRef(null); // Ref for the file input
+
+  // Handle Image Upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image")) {
+      const fileSizeMB = file.size / (1024 * 1024); // Convert bytes to MB
+      setFileSize(fileSizeMB.toFixed(2)); // Show file size up to 2 decimal places
+
+      if (fileSizeMB > MAX_FILE_SIZE_MB) {
+        // If file size exceeds the limit, show an error and reset the image
+        setErrorMessage(
+          `File size exceeds ${MAX_FILE_SIZE_MB} MB. Please upload a smaller image.`
+        );
+        setImage(null);
+        setProcessedImage(null);
+        return;
+      }
+
+      setErrorMessage(null); // Clear any existing error message
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImage(event.target.result); // Set uploaded image URL
+        setProcessedImage(null); // Reset processed image if a new file is uploaded
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle Language Selection
+  const handleLanguageChange = (e) => {
+    setSelectedLanguage(e.target.value); // Set the selected language
+    setErrorMessage(null);
+  };
+
+  // Submit Image to the API for Processing
+  const handleProcessImage = async () => {
+    if (!selectedLanguage) {
+      setErrorMessage("Please select a language for the banner.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Banner-Language": selectedLanguage, // Add selected language to headers
+        },
+        body: JSON.stringify({ image }),
+      });
+      const data = await response.json();
+      setProcessedImage(data.image);
+      setLoading(false); // Set processed image from server
+    } catch (error) {
+      console.error("Error processing image:", error);
+      setLoading(false);
+    }
+  };
+
+  // Download the Processed Image
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = processedImage;
+    link.download = "framed-image.png";
+    link.click();
+  };
+
+  // Clear the file input, uploaded image, and processed image
+  const handleClearImage = () => {
+    setImage(null);
+    setProcessedImage(null);
+    setFileSize(null);
+    setErrorMessage(null);
+    setSelectedLanguage(""); // Clear selected language
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Clear the file input field
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="flex container mt-2 md:mt-10 justify-around flex-col md:flex-row md:mx-auto gap-2 p-4 text-center">
+      <div className="basis-2/3 rounded-lg border shadow-2xl p-8">
+        <h1 className="text-3xl font-bold p-4">We Support Geeta Jain</h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        {/* File Input */}
+        <form className="w-full md:w-[80%] rounded-lg" method="post">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            ref={fileInputRef} // Attach ref to input
+            className="block w-full border text-sm rounded-lg text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-300 file:text-black hover:file:bg-blue-800 hover:file:text-white"
+          />
+        </form>
+
+        {/* Display File Size or Error Message */}
+        {fileSize && !errorMessage && (
+          <p className="text-gray-600 mt-2">Image size: {fileSize} MB</p>
+        )}
+        {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
+
+        <div className="flex justify-around flex-col md:flex-row">
+          <div className="">
+            <div className="mt-8 flex justify-center border-2 rounded-lg items-center min-h-[300px] overflow-hidden w-[300px]">
+              {!image && !errorMessage && (
+                <h2 className="text-lg font-semibold text-gray-600">
+                  Your Image
+                </h2>
+              )}
+              {image && (
+                <div className="flex flex-col">
+                  <div className="">
+                    <img
+                      src={image}
+                      alt="Uploaded Preview"
+                      className="shadow-lg w-full rounded-lg min-h-[300px] object-cover h-[300px]"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {image && (
+              <div className="mt-4">
+                <div>
+                  <h1 className="w-full font-semibold text-left pl-2">
+                    Select Language
+                  </h1>
+                  <select
+                    value={selectedLanguage}
+                    onChange={handleLanguageChange}
+                    className="border rounded-md p-2 w-full font-semibold text-gray-600"
+                  >
+                    <option
+                      value=""
+                      className="text-center font-semibold text-gray-500"
+                      disabled
+                    >
+                      Choose Banner Text Language
+                    </option>
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Marathi">Marathi</option>
+                    <option value="Gujarati">Gujarati</option>
+                  </select>
+                </div>
+                <div className="flex justify-around mt-4">
+                  <div>
+                    {loading ? (
+                      <Spinner5 />
+                    ) : (
+                      <button
+                        onClick={handleProcessImage}
+                        disabled={
+                          loading ||
+                          (processedImage !== null && selectedLanguage === "")
+                        }
+                        className="mt-4 rounded-lg bg-[#FFAA33] py-2 px-4 font-semibold text-[#261D79]"
+                      >
+                        {processedImage == null || selectedLanguage !== ""
+                          ? "Add Banner"
+                          : "Completed"}
+                      </button>
+                    )}
+                  </div>
+                  <div>
+                    <button
+                      onClick={handleClearImage}
+                      className="mt-4 rounded-lg bg-red-500 py-2 px-4 hover:bg-red-500/80 font-semibold text-white"
+                    >
+                      Remove Image
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Display Processed Image */}
+          {processedImage && (
+            <div className="flex flex-col items-center">
+              <div className="mt-8 flex justify-center items-center min-h-[300px] rounded-lg overflow-hidden w-[300px]">
+                <img
+                  src={processedImage}
+                  alt="Processed with Frame"
+                  className="border border-gray-300 rounded-full transition-all shadow-lg w-full min-h-[300px] object-cover h-[300px] shadow-lg"
+                />
+              </div>
+              {!loading && (
+                <button
+                  onClick={handleDownload}
+                  className="mt-4 rounded-lg bg-green-400 py-2 px-4 hover:opacity-80 font-semibold text-black"
+                >
+                  Download
+                </button>
+              )}
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+      <div
+        className="basis-1/3 rounded-lg w-full md:w-[90%]"
+        style={{ backgroundImage: "var(--gradient)" }}
+      >
+        <h1 className="text-3xl font-bold pt-10 text-white">Steps</h1>
+        <div className="p-4">
+          <div className="px-10 py-4 shadow-xl bg-gray-200/50 rounded-lg">
+            <ul className="text-black font-medium text-lg list-decimal text-left">
+              <li>Click on the choose file button and select an image.</li>
+              <li>Preview the Image and click on the Add Banner button.</li>
+              <li>Wait for the process to complete.</li>
+              <li>Download the processed image.</li>
+            </ul>
+          </div>
+        </div>
+        <div className="mt-10">
+          <h1 className="pl-10 text-left text-lg font-bold text-white">
+            Sample Output:
+          </h1>
+          <div className="flex justify-center">
+            <div className="my-2 min-h-[200px] rounded-lg overflow-hidden w-[200px]">
+              <img
+                src={"/sample.png"}
+                alt="Sample Output Image"
+                className="border border-gray-300 rounded-full transition-all shadow-lg w-full min-h-[200px] object-cover h-[200px] shadow-lg"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default ImageUploader;

@@ -1,4 +1,4 @@
-export default function Spinner5() {
+export default function Spinner6() {
     return (
       <section className="">
         <button

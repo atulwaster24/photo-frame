@@ -219,7 +219,7 @@
 
 "use client";
 import React, { useState, useRef } from "react";
-import Spinner5 from "./components/Spinner";
+import Spinner6 from "./components/Spinner";
 
 const MAX_FILE_SIZE_MB = 10; // Maximum file size in MB
 
@@ -381,7 +381,7 @@ const ImageUploader = () => {
                 <div className="flex justify-around mt-4">
                   <div>
                     {loading ? (
-                      <Spinner5 />
+                      <Spinner6 />
                     ) : (
                       <button
                         onClick={handleProcessImage}
